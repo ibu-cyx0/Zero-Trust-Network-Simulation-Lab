@@ -1,0 +1,113 @@
+[
+  {
+    "id": "FW-000",
+    "action": "block",
+    "src": "any",
+    "dst": "any",
+    "proto": "any",
+    "desc": "Default deny all \u2014 Zero Trust baseline"
+  },
+  {
+    "id": "FW-001",
+    "action": "pass",
+    "src": "!RFC1918",
+    "dst": "10.0.0.0/24",
+    "proto": "tcp",
+    "port": "443",
+    "desc": "HTTPS inbound to DMZ only"
+  },
+  {
+    "id": "FW-010",
+    "action": "pass",
+    "src": "10.0.1.0/24",
+    "dst": "10.0.1.10",
+    "proto": "tcp",
+    "port": "8000,8089",
+    "desc": "SOC \u2192 Splunk web + API"
+  },
+  {
+    "id": "FW-011",
+    "action": "pass",
+    "src": "10.0.1.0/24",
+    "dst": "10.0.1.5",
+    "proto": "tcp",
+    "port": "1514,55000",
+    "desc": "SOC \u2192 Wazuh manager"
+  },
+  {
+    "id": "FW-012",
+    "action": "block",
+    "src": "10.0.1.0/24",
+    "dst": "10.0.2.0/24",
+    "proto": "any",
+    "desc": "SOC \u2192 Dev: block lateral movement"
+  },
+  {
+    "id": "FW-013",
+    "action": "block",
+    "src": "10.0.1.0/24",
+    "dst": "10.0.3.0/24",
+    "proto": "any",
+    "desc": "SOC \u2192 MGMT: block (not needed)"
+  },
+  {
+    "id": "FW-020",
+    "action": "pass",
+    "src": "10.0.3.5",
+    "dst": "any",
+    "proto": "tcp",
+    "port": "22",
+    "desc": "Admin SSH to all \u2014 time-restricted"
+  },
+  {
+    "id": "FW-021",
+    "action": "pass",
+    "src": "10.0.3.5",
+    "dst": "10.0.1.5",
+    "proto": "tcp",
+    "port": "55000",
+    "desc": "Admin \u2192 Wazuh API"
+  },
+  {
+    "id": "FW-030",
+    "action": "pass",
+    "src": "10.0.2.0/24",
+    "dst": "10.0.2.10",
+    "proto": "tcp",
+    "port": "22,80,443",
+    "desc": "Dev \u2192 Dev Server"
+  },
+  {
+    "id": "FW-031",
+    "action": "block",
+    "src": "10.0.2.0/24",
+    "dst": "10.0.1.0/24",
+    "proto": "any",
+    "desc": "Dev \u2192 SOC: block (micro-seg)"
+  },
+  {
+    "id": "FW-032",
+    "action": "block",
+    "src": "10.0.2.0/24",
+    "dst": "10.0.3.0/24",
+    "proto": "any",
+    "desc": "Dev \u2192 MGMT: block"
+  },
+  {
+    "id": "FW-040",
+    "action": "pass",
+    "src": "192.168.1.0/24",
+    "dst": "!RFC1918",
+    "proto": "tcp",
+    "port": "80,443",
+    "desc": "Guest \u2192 Internet only"
+  },
+  {
+    "id": "FW-041",
+    "action": "block",
+    "src": "192.168.1.0/24",
+    "dst": "10.0.0.0/8",
+    "proto": "any",
+    "desc": "Guest \u2192 Internal: BLOCK ALL"
+  }
+]

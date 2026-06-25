@@ -1,0 +1,84 @@
+{
+  "zones": {
+    "INTERNET": {
+      "subnet": "0.0.0.0/0",
+      "trust": 0,
+      "color": "#ff3860"
+    },
+    "DMZ": {
+      "subnet": "10.0.0.0/24",
+      "trust": 10,
+      "color": "#ff8c00"
+    },
+    "SOC_NET": {
+      "subnet": "10.0.1.0/24",
+      "trust": 80,
+      "color": "#00d4ff"
+    },
+    "DEV_NET": {
+      "subnet": "10.0.2.0/24",
+      "trust": 70,
+      "color": "#7c3aed"
+    },
+    "MGMT_NET": {
+      "subnet": "10.0.3.0/24",
+      "trust": 90,
+      "color": "#00ff88"
+    },
+    "GUEST_NET": {
+      "subnet": "192.168.1.0/24",
+      "trust": 5,
+      "color": "#ffd600"
+    }
+  },
+  "hosts": [
+    {
+      "name": "pfsense-fw",
+      "ip": "10.0.0.1",
+      "zone": "DMZ",
+      "role": "Firewall/Router"
+    },
+    {
+      "name": "wazuh-siem",
+      "ip": "10.0.1.5",
+      "zone": "SOC_NET",
+      "role": "SIEM Server"
+    },
+    {
+      "name": "splunk-server",
+      "ip": "10.0.1.10",
+      "zone": "SOC_NET",
+      "role": "Splunk Enterprise"
+    },
+    {
+      "name": "soc-workstation",
+      "ip": "10.0.1.15",
+      "zone": "SOC_NET",
+      "role": "Analyst Workstation"
+    },
+    {
+      "name": "dev-server",
+      "ip": "10.0.2.10",
+      "zone": "DEV_NET",
+      "role": "Dev Server"
+    },
+    {
+      "name": "dev-ws-1",
+      "ip": "10.0.2.20",
+      "zone": "DEV_NET",
+      "role": "Dev Workstation"
+    },
+    {
+      "name": "mgmt-server",
+      "ip": "10.0.3.5",
+      "zone": "MGMT_NET",
+      "role": "Admin Server"
+    },
+    {
+      "name": "guest-laptop",
+      "ip": "192.168.1.10",
+      "zone": "GUEST_NET",
+      "role": "Guest Device"
+    }
+  ]
+}

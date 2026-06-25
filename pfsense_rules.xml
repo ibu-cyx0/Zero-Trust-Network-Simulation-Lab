@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<pfsense>
+  <filter>
+    <rule>
+      <id>FW-000</id>
+      <type>block</type>
+      <source><address>any</address></source>
+      <destination><address>any</address></destination>
+      <protocol>any</protocol>
+      <descr>Default deny all — Zero Trust baseline</descr>
+    </rule>
+    <rule>
+      <id>FW-001</id>
+      <type>pass</type>
+      <source><address>!RFC1918</address></source>
+      <destination><address>10.0.0.0/24</address></destination>
+      <protocol>tcp</protocol>
+      <descr>HTTPS inbound to DMZ only</descr>
+    </rule>
+    <rule>
+      <id>FW-010</id>
+      <type>pass</type>
+      <source><address>10.0.1.0/24</address></source>
+      <destination><address>10.0.1.10</address></destination>
+      <protocol>tcp</protocol>
+      <descr>SOC → Splunk web + API</descr>
+    </rule>
+    <rule>
+      <id>FW-011</id>
+      <type>pass</type>
+      <source><address>10.0.1.0/24</address></source>
+      <destination><address>10.0.1.5</address></destination>
+      <protocol>tcp</protocol>
+      <descr>SOC → Wazuh manager</descr>
+    </rule>
+    <rule>
+      <id>FW-012</id>
+      <type>block</type>
+      <source><address>10.0.1.0/24</address></source>
+      <destination><address>10.0.2.0/24</address></destination>
+      <protocol>any</protocol>
+      <descr>SOC → Dev: block lateral movement</descr>
+    </rule>
+    <rule>
+      <id>FW-013</id>
+      <type>block</type>
+      <source><address>10.0.1.0/24</address></source>
+      <destination><address>10.0.3.0/24</address></destination>
+      <protocol>any</protocol>
+      <descr>SOC → MGMT: block (not needed)</descr>
+    </rule>
+    <rule>
+      <id>FW-020</id>
+      <type>pass</type>
+      <source><address>10.0.3.5</address></source>
+      <destination><address>any</address></destination>
+      <protocol>tcp</protocol>
+      <descr>Admin SSH to all — time-restricted</descr>
+    </rule>
+    <rule>
+      <id>FW-021</id>
+      <type>pass</type>
+      <source><address>10.0.3.5</address></source>
+      <destination><address>10.0.1.5</address></destination>
+      <protocol>tcp</protocol>
+      <descr>Admin → Wazuh API</descr>
+    </rule>
+    <rule>
+      <id>FW-030</id>
+      <type>pass</type>
+      <source><address>10.0.2.0/24</address></source>
+      <destination><address>10.0.2.10</address></destination>
+      <protocol>tcp</protocol>
+      <descr>Dev → Dev Server</descr>
+    </rule>
+    <rule>
+      <id>FW-031</id>
+      <type>block</type>
+      <source><address>10.0.2.0/24</address></source>
+      <destination><address>10.0.1.0/24</address></destination>
+      <protocol>any</protocol>
+      <descr>Dev → SOC: block (micro-seg)</descr>
+    </rule>
+    <rule>
+      <id>FW-032</id>
+      <type>block</type>
+      <source><address>10.0.2.0/24</address></source>
+      <destination><address>10.0.3.0/24</address></destination>
+      <protocol>any</protocol>
+      <descr>Dev → MGMT: block</descr>
+    </rule>
+    <rule>
+      <id>FW-040</id>
+      <type>pass</type>
+      <source><address>192.168.1.0/24</address></source>
+      <destination><address>!RFC1918</address></destination>
+      <protocol>tcp</protocol>
+      <descr>Guest → Internet only</descr>
+    </rule>
+    <rule>
+      <id>FW-041</id>
+      <type>block</type>
+      <source><address>192.168.1.0/24</address></source>
+      <destination><address>10.0.0.0/8</address></destination>
+      <protocol>any</protocol>
+      <descr>Guest → Internal: BLOCK ALL</descr>
+    </rule>
+  </filter>
+</pfsense>

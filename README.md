@@ -61,42 +61,33 @@ A fully functional **Zero Trust Network Architecture (ZTNA)** simulation built w
 ## 📁 Project Structure
 
 ```
-zero-trust-lab/
-├── policies/
-│   └── policy_engine.py         # Zero Trust access evaluator
-├── monitor/
-│   ├── zt_monitor.py            # Wazuh-style alert correlation
-│   ├── access_log.json          # All access events (auto-generated)
-│   └── alerts.json              # Fired alerts (auto-generated)
-├── scripts/
-│   └── segmentation.py          # Network zone + pfSense rule generator
-├── docs/
-│   ├── pfsense_rules.xml        # pfSense firewall export
-│   ├── firewall_rules.json      # All 13 micro-segmentation rules
-│   └── network_zones.json       # Zone definitions + host inventory
-├── dashboard/
-│   └── index.html               # Live ZT monitoring dashboard
-├── main.py                      # Full pipeline runner
-└── README.md
+Zero-Trust-Network-Simulation-Lab/
+├── policy_engine.py         # Zero Trust access evaluator
+├── zt_monitor.py            # Wazuh-style alert correlation
+├── segmentation.py          # Network zone + pfSense rule generator
+├── main.py                  # Full pipeline runner
+├── index.html               # Live ZT monitoring dashboard
+├── access_log.json          # Access events (auto-generated)
+├── alerts.json              # Fired alerts (auto-generated)
+├── firewall_rules.json      # Micro-segmentation rules
+├── network_zones.json       # Zone definitions + host inventory
+├── pfsense_rules.xml        # pfSense firewall export
+└── requirements.txt
 ```
-
----
 
 ## ⚙️ Setup & Run
 
-```bash
-git clone https://github.com/ibu-cyx0/zero-trust-lab
-cd zero-trust-lab
+```
+git clone https://github.com/ibu-cyx0/Zero-Trust-Network-Simulation-Lab
+cd Zero-Trust-Network-Simulation-Lab
 pip install -r requirements.txt
 
 # Run full simulation
 python main.py
 
 # Open dashboard
-open dashboard/index.html
+open index.html
 ```
-
----
 
 ## 🔐 Zero Trust Policy Engine
 

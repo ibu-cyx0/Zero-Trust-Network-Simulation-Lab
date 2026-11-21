@@ -1,318 +1,1327 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Zero Trust Lab | Mohamed Ibrahim H</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap');
-:root{--bg:#050a05;--panel:#080f08;--border:#0d2010;--accent:#00ff88;--accent2:#00d4aa;--red:#ff3860;--orange:#ff8c00;--yellow:#ffd600;--blue:#00d4ff;--purple:#a78bfa;--dim:#2a5040;--text:#a0c8a0;--mono:'Share Tech Mono',monospace;--sans:'Inter',sans-serif;}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13px;min-height:100vh;}
-header{background:var(--panel);border-bottom:1px solid var(--border);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.logo{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:1px;}
-.logo-icon{width:34px;height:34px;background:rgba(0,255,136,0.1);border:1.5px solid var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 16px rgba(0,255,136,0.2);}
-.header-right{display:flex;align-items:center;gap:20px;}
-.zt-badge{font-family:var(--mono);font-size:10px;background:rgba(0,255,136,0.08);color:var(--accent);border:1px solid rgba(0,255,136,0.2);border-radius:4px;padding:4px 10px;letter-spacing:1px;}
-.live-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:blink 1.4s infinite;display:inline-block;margin-right:6px;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
-.clock{font-family:var(--mono);font-size:11px;color:var(--dim);}
-.main{padding:20px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-
-/* stat cards */
-.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative;overflow:hidden;}
-.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:10px 10px 0 0;}
-.stat-card.green::after{background:var(--accent);}
-.stat-card.red::after{background:var(--red);}
-.stat-card.blue::after{background:var(--blue);}
-.stat-card.orange::after{background:var(--orange);}
-.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--dim);margin-bottom:10px;font-family:var(--mono);}
-.stat-value{font-family:var(--mono);font-size:30px;font-weight:700;line-height:1;margin-bottom:5px;}
-.stat-card.green .stat-value{color:var(--accent);}
-.stat-card.red .stat-value{color:var(--red);}
-.stat-card.blue .stat-value{color:var(--blue);}
-.stat-card.orange .stat-value{color:var(--orange);}
-.stat-sub{font-size:10px;color:var(--dim);}
-
-/* panels */
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
-.panel-header{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.panel-title{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);}
-.panel-body{padding:16px 18px;}
-.badge{font-family:var(--mono);font-size:10px;background:rgba(0,255,136,0.08);color:var(--accent);border:1px solid rgba(0,255,136,0.2);border-radius:3px;padding:2px 8px;}
-
-/* access table */
-.access-table{width:100%;border-collapse:collapse;font-size:11px;}
-.access-table th{text-align:left;padding:6px 10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;font-size:10px;border-bottom:1px solid var(--border);font-family:var(--mono);}
-.access-table td{padding:9px 10px;border-bottom:1px solid rgba(13,32,16,0.8);vertical-align:middle;}
-.access-table tr:hover td{background:rgba(0,255,136,0.03);}
-.access-table tr.new{animation:fadeIn 0.5s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:translateX(0);}}
-
-/* verdict */
-.verdict{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:4px;font-family:var(--mono);font-size:10px;font-weight:600;}
-.v-allow{background:rgba(0,255,136,0.1);color:var(--accent);border:1px solid rgba(0,255,136,0.25);}
-.v-deny{background:rgba(255,56,96,0.12);color:var(--red);border:1px solid rgba(255,56,96,0.25);}
-
-/* sev */
-.sev{display:inline-block;padding:2px 7px;border-radius:3px;font-family:var(--mono);font-size:10px;font-weight:600;}
-.sev-CRITICAL{background:rgba(255,56,96,0.12);color:var(--red);border:1px solid rgba(255,56,96,0.25);}
-.sev-HIGH{background:rgba(255,140,0,0.12);color:var(--orange);border:1px solid rgba(255,140,0,0.25);}
-.sev-MEDIUM{background:rgba(255,214,0,0.1);color:var(--yellow);border:1px solid rgba(255,214,0,0.25);}
-.sev-LOW{background:rgba(0,255,136,0.08);color:var(--accent);border:1px solid rgba(0,255,136,0.2);}
-
-/* risk score bar */
-.risk-wrap{display:flex;align-items:center;gap:6px;}
-.risk-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
-.risk-fill{height:100%;border-radius:3px;transition:width 0.5s ease;}
-.risk-num{font-family:var(--mono);font-size:10px;width:30px;}
-
-/* network map */
-.net-map{background:#030703;border-radius:8px;height:220px;position:relative;overflow:hidden;border:1px solid var(--border);}
-.net-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(13,32,16,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(13,32,16,0.6) 1px,transparent 1px);background-size:24px 24px;}
-
-/* zones */
-.zone-box{position:absolute;border-radius:6px;padding:6px 8px;font-family:var(--mono);font-size:9px;text-align:center;letter-spacing:0.5px;}
-.zone-internet{background:rgba(255,56,96,0.08);border:1px solid rgba(255,56,96,0.3);color:#ff6080;left:2%;top:5%;width:14%;}
-.zone-dmz{background:rgba(255,140,0,0.08);border:1px solid rgba(255,140,0,0.3);color:#ffaa44;left:20%;top:5%;width:14%;}
-.zone-soc{background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.3);color:#00d4ff;left:38%;top:5%;width:14%;}
-.zone-dev{background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.3);color:#a78bfa;left:56%;top:5%;width:14%;}
-.zone-mgmt{background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.3);color:#00ff88;left:74%;top:5%;width:14%;}
-.zone-guest{background:rgba(255,214,0,0.08);border:1px solid rgba(255,214,0,0.3);color:#ffd600;left:56%;bottom:8%;width:14%;}
-
-/* hosts */
-.host-dot{position:absolute;width:8px;height:8px;border-radius:50%;cursor:pointer;}
-.host-dot:hover::after{content:attr(data-label);position:absolute;left:12px;top:-4px;background:#0c1008;border:1px solid var(--border);padding:3px 6px;border-radius:3px;font-family:var(--mono);font-size:9px;color:var(--accent);white-space:nowrap;z-index:10;}
-
-/* connection lines drawn via canvas */
-canvas.net-canvas{position:absolute;inset:0;width:100%;height:100%;}
-
-/* alert feed */
-.alert-item{padding:10px 0;border-bottom:1px solid rgba(13,32,16,0.8);display:flex;align-items:flex-start;gap:10px;}
-.alert-item:last-child{border-bottom:none;}
-.alert-icon{font-size:14px;margin-top:1px;flex-shrink:0;}
-.alert-body{flex:1;}
-.alert-name{font-family:var(--mono);font-size:11px;color:var(--text);margin-bottom:3px;}
-.alert-meta{font-family:var(--mono);font-size:10px;color:var(--dim);}
-
-/* zone trust bars */
-.zone-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.zone-name{font-family:var(--mono);font-size:10px;color:var(--dim);width:80px;flex-shrink:0;}
-.zone-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
-.zone-fill{height:100%;border-radius:3px;transition:width 1s ease;}
-.zone-score{font-family:var(--mono);font-size:10px;width:30px;text-align:right;}
-
-/* terminal */
-.terminal{background:#020502;border-radius:6px;padding:12px 14px;font-family:var(--mono);font-size:11px;height:120px;overflow-y:auto;line-height:1.75;border:1px solid var(--border);}
-.terminal::-webkit-scrollbar{width:3px;}
-.terminal::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px;}
-.lt{color:var(--dim);}.li{color:var(--accent);}.lw{color:var(--orange);}.la{color:var(--red);}.lo{color:var(--accent2);}
-
-.area-stats{grid-column:span 4;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-.area-access{grid-column:span 3;}
-.area-alerts{grid-column:span 1;}
-.area-bottom{grid-column:span 4;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
-.author{font-family:var(--mono);font-size:10px;color:var(--dim);}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive NIST SP 800-207 Zero Trust Network Simulation Lab with 5-factor Policy Decision Point, pfSense micro-segmentation rules, and Wazuh MITRE ATT&CK correlation." />
+  <meta property="og:title" content="Zero Trust Network Simulation Lab · NIST SP 800-207" />
+  <meta property="og:description" content="5-factor Zero Trust PDP simulator, 13 pfSense micro-segmentation rules with live hit counters, and stateful Wazuh MITRE ATT&CK alerting." />
+  <title>Zero Trust Network Simulation Lab · NIST SP 800-207 | Mohamed Ibrahim H</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            obsidian: '#0a0e17',
+            surface: '#101623',
+            elevated: '#172033',
+            rim: '#243049',
+            accent: '#8b5cf6',
+            accentsoft: '#a78bfa',
+            allow: '#34d399',
+            deny: '#fb7185',
+            warn: '#fbbf24',
+            info: '#38bdf8',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    html, body {
+      background-color: #0a0e17;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, sans-serif;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .grid-bg {
+      background-image:
+        linear-gradient(to right, rgba(139, 92, 246, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(139, 92, 246, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+    .pulse-dot {
+      animation: pulseSoft 1.8s ease-in-out infinite;
+    }
+    @keyframes rowSlide {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .row-enter {
+      animation: rowSlide 0.25s ease-out;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pulse-dot, .row-enter {
+        animation: none !important;
+      }
+    }
+  </style>
 </head>
-<body>
-<header>
-  <div class="logo">
-    <div class="logo-icon">🔐</div>
-    <span>ZERO TRUST NETWORK SIMULATION LAB</span>
-  </div>
-  <div class="header-right">
-    <span class="author">Mohamed Ibrahim H · github.com/ibu-cyx0</span>
-    <span class="zt-badge">🛡 NEVER TRUST · ALWAYS VERIFY</span>
-    <span style="font-family:var(--mono);font-size:11px;color:var(--accent)"><span class="live-dot"></span>MONITORING</span>
-    <span class="clock" id="clock">--:--:--</span>
-  </div>
-</header>
-
-<div class="main">
-  <!-- STATS -->
-  <div class="area-stats">
-    <div class="stat-card green"><div class="stat-label">Requests Allowed</div><div class="stat-value" id="s-allow">0</div><div class="stat-sub">Passed all ZT checks</div></div>
-    <div class="stat-card red"><div class="stat-label">Requests Denied</div><div class="stat-value" id="s-deny">0</div><div class="stat-sub">Default deny enforced</div></div>
-    <div class="stat-card blue"><div class="stat-label">Active Alerts</div><div class="stat-value" id="s-alert">0</div><div class="stat-sub">Wazuh SIEM detections</div></div>
-    <div class="stat-card orange"><div class="stat-label">Firewall Rules</div><div class="stat-value">13</div><div class="stat-sub">pfSense micro-segmentation</div></div>
-  </div>
-
-  <!-- ACCESS LOG TABLE -->
-  <div class="area-access panel">
-    <div class="panel-header">
-      <span class="panel-title">🔑 Zero Trust Access Log</span>
-      <span class="badge" id="log-badge">Evaluating...</span>
-    </div>
-    <div style="overflow-x:auto;">
-      <table class="access-table">
-        <thead><tr><th>Time</th><th>User</th><th>Resource</th><th>Source IP</th><th>Rule</th><th>Risk</th><th>Verdict</th></tr></thead>
-        <tbody id="access-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ALERTS FEED -->
-  <div class="area-alerts panel">
-    <div class="panel-header"><span class="panel-title">🚨 Wazuh Alerts</span><span class="badge" id="alert-badge">0</span></div>
-    <div class="panel-body" id="alert-feed" style="max-height:260px;overflow-y:auto;padding:8px 12px;"></div>
-  </div>
-
-  <!-- BOTTOM ROW -->
-  <div class="area-bottom">
-    <!-- Network Map -->
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">🌐 Network Topology</span><span class="badge">MICRO-SEGMENTED</span></div>
-      <div class="panel-body" style="padding:8px;">
-        <div class="net-map" id="net-map">
-          <div class="net-grid"></div>
-          <canvas class="net-canvas" id="net-canvas"></canvas>
-          <div class="zone-box zone-internet">INTERNET<br/>Trust:0</div>
-          <div class="zone-box zone-dmz">pfSense<br/>DMZ</div>
-          <div class="zone-box zone-soc">SOC_NET<br/>10.0.1/24</div>
-          <div class="zone-box zone-dev">DEV_NET<br/>10.0.2/24</div>
-          <div class="zone-box zone-mgmt">MGMT<br/>10.0.3/24</div>
-          <div class="zone-box zone-guest">GUEST<br/>192.168/24</div>
+<body class="min-h-screen antialiased selection:bg-accent/25 selection:text-violet-100">
+  <!-- TOP COMMAND HEADER -->
+  <header class="sticky top-0 z-40 border-b border-rim bg-obsidian/95 backdrop-blur">
+    <div class="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <div class="flex items-center gap-3">
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg border border-accent/50 bg-accent/15 text-accentsoft">
+          <i data-lucide="shield-check" class="h-5 w-5"></i>
         </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-sm font-semibold tracking-tight text-slate-100 sm:text-base">Zero Trust Network Simulation Lab</h1>
+            <span class="rounded border border-accent/40 bg-accent/15 px-1.5 py-0.5 font-mono text-[11px] font-medium text-accentsoft">SIMULATED LAB</span>
+            <span class="hidden rounded border border-info/35 bg-info/10 px-1.5 py-0.5 font-mono text-[11px] text-info sm:inline-block">NIST SP 800-207</span>
+          </div>
+          <p class="font-mono text-[11px] text-slate-400">pfSense = Network PEP · Identity, MFA &amp; Device Posture Simulated by PDP</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+        <div class="flex items-center gap-2 rounded-lg border border-rim bg-surface px-2.5 py-1.5 font-mono text-xs text-slate-200">
+          <span class="pulse-dot h-2 w-2 rounded-full bg-allow"></span>
+          <span id="stream-status">STREAMING</span>
+          <span class="text-slate-400">|</span>
+          <span id="utc-clock" class="text-accentsoft">--:--:-- UTC</span>
+        </div>
+
+        <button id="toggle-stream-btn" type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-rim bg-surface px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:border-accent/60 hover:text-accentsoft">
+          <i data-lucide="pause" class="h-3.5 w-3.5"></i>
+          <span>Pause</span>
+        </button>
+
+        <button id="reset-lab-btn" type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-rim bg-surface px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:border-deny/60 hover:text-deny">
+          <i data-lucide="rotate-ccw" class="h-3.5 w-3.5"></i>
+          <span>Reset</span>
+        </button>
+
+        <button id="export-csv-btn" type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-rim bg-surface px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:border-info/60 hover:text-info">
+          <i data-lucide="download" class="h-3.5 w-3.5"></i>
+          <span>Export Log</span>
+        </button>
+
+        <a href="https://github.com/ibu-cyx0/Zero-Trust-Network-Simulation-Lab" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 rounded-lg border border-accent/45 bg-accent/15 px-3 py-1.5 text-xs font-medium text-accentsoft transition hover:bg-accent/25">
+          <i data-lucide="github" class="h-3.5 w-3.5"></i>
+          <span>GitHub Source</span>
+        </a>
       </div>
     </div>
 
-    <!-- Zone Trust Levels -->
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">🔒 Zone Trust Levels</span></div>
-      <div class="panel-body">
-        <div class="zone-row"><span class="zone-name">MGMT_NET</span><div class="zone-track"><div class="zone-fill" style="width:90%;background:#00ff88;"></div></div><span class="zone-score" style="color:#00ff88;">90</span></div>
-        <div class="zone-row"><span class="zone-name">SOC_NET</span><div class="zone-track"><div class="zone-fill" style="width:80%;background:#00d4ff;"></div></div><span class="zone-score" style="color:#00d4ff;">80</span></div>
-        <div class="zone-row"><span class="zone-name">DEV_NET</span><div class="zone-track"><div class="zone-fill" style="width:70%;background:#a78bfa;"></div></div><span class="zone-score" style="color:#a78bfa;">70</span></div>
-        <div class="zone-row"><span class="zone-name">DMZ</span><div class="zone-track"><div class="zone-fill" style="width:10%;background:#ff8c00;"></div></div><span class="zone-score" style="color:#ff8c00;">10</span></div>
-        <div class="zone-row"><span class="zone-name">GUEST</span><div class="zone-track"><div class="zone-fill" style="width:5%;background:#ffd600;"></div></div><span class="zone-score" style="color:#ffd600;">5</span></div>
-        <div class="zone-row"><span class="zone-name">INTERNET</span><div class="zone-track"><div class="zone-fill" style="width:0%;background:#ff3860;"></div></div><span class="zone-score" style="color:#ff3860;">0</span></div>
-        <div style="margin-top:14px;padding:10px;background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.1);border-radius:6px;font-family:var(--mono);font-size:10px;color:var(--dim);line-height:1.8;">
-          NIST 800-207 Compliant<br/>
-          MFA: Required all zones<br/>
-          Device Trust: Enforced<br/>
-          Default Policy: DENY ALL
-        </div>
+    <!-- VIEW SWITCHER RIBBON -->
+    <div class="mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-3 border-t border-rim/80 px-4 py-2 sm:px-6">
+      <div role="tablist" aria-label="Zero Trust Lab Views" class="flex flex-wrap items-center gap-1.5">
+        <button role="tab" aria-selected="true" aria-controls="panel-overview" id="tab-overview" data-tab="overview" tabindex="0" class="tab-btn rounded-md bg-accent/20 px-3 py-1.5 text-xs font-semibold text-accentsoft ring-1 ring-accent/40 transition">
+          Policy &amp; Access Monitor
+        </button>
+        <button role="tab" aria-selected="false" aria-controls="panel-rules" id="tab-rules" data-tab="rules" tabindex="-1" class="tab-btn rounded-md px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:bg-elevated hover:text-slate-200">
+          pfSense Ruleset (13)
+        </button>
+        <button role="tab" aria-selected="false" aria-controls="panel-wazuh" id="tab-wazuh" data-tab="wazuh" tabindex="-1" class="tab-btn rounded-md px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:bg-elevated hover:text-slate-200">
+          Wazuh MITRE Rules (7)
+        </button>
+        <button role="tab" aria-selected="false" aria-controls="panel-nist" id="tab-nist" data-tab="nist" tabindex="-1" class="tab-btn rounded-md px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:bg-elevated hover:text-slate-200">
+          NIST SP 800-207 Mapping
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3 font-mono text-[11px] text-slate-400">
+        <span>Default Policy: <strong class="text-deny">DENY ALL</strong></span>
+        <span class="hidden sm:inline text-slate-400">·</span>
+        <span class="hidden sm:inline">Author: <strong class="text-slate-200">Mohamed Ibrahim H</strong></span>
       </div>
     </div>
+  </header>
 
-    <!-- Terminal -->
-    <div class="panel">
-      <div class="panel-header"><span class="panel-title">⬛ Policy Engine Log</span><span class="badge">LIVE</span></div>
-      <div class="panel-body"><div class="terminal" id="terminal"></div></div>
-    </div>
-  </div>
-</div>
+  <main class="mx-auto max-w-[1440px] space-y-5 px-4 py-5 sm:px-6">
+    <!-- KPI STRIP -->
+    <section class="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <div class="rounded-xl border border-rim bg-surface p-4">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>Requests Evaluated</span>
+          <i data-lucide="activity" class="h-4 w-4 text-accentsoft"></i>
+        </div>
+        <div id="kpi-total" class="mt-2 font-mono text-2xl font-semibold text-slate-100">0</div>
+        <div class="mt-1 font-mono text-[11px] text-slate-400">5-factor continuous PDP</div>
+      </div>
 
-<script>
-const EVENTS=[
-  {user:"ibrahim.soc",resource:"splunk_dashboard",ip:"10.0.1.15",rule:"ZT-001",risk:5,  verdict:"ALLOW",reason:"All ZT checks passed"},
-  {user:"admin.root",  resource:"ssh_server",      ip:"10.0.1.10",rule:"ZT-002",risk:5,  verdict:"ALLOW",reason:"All ZT checks passed"},
-  {user:"unknown.user",resource:"splunk_dashboard", ip:"192.168.1.5",rule:"ZT-D002",risk:95,verdict:"DENY", reason:"Unmanaged device"},
-  {user:"attacker",    resource:"ssh_server",       ip:"45.142.212.100",rule:"ZT-D002",risk:98,verdict:"DENY",reason:"External + unmanaged"},
-  {user:"dev.user1",   resource:"dev_server",       ip:"10.0.2.20",rule:"ZT-003",risk:5,  verdict:"ALLOW",reason:"All ZT checks passed"},
-  {user:"admin.root",  resource:"ssh_server",       ip:"10.0.1.10",rule:"ZT-002",risk:70, verdict:"DENY", reason:"Outside hours (22:00)"},
-  {user:"ibrahim.soc", resource:"ssh_server",       ip:"10.0.1.15",rule:"ZT-DEFAULT",risk:80,verdict:"DENY",reason:"No matching allow rule"},
-  {user:"dev.user1",   resource:"splunk_dashboard", ip:"10.0.2.20",rule:"ZT-DEFAULT",risk:75,verdict:"DENY",reason:"No matching allow rule"},
-  {user:"admin.root",  resource:"ssh_server",       ip:"10.0.1.10",rule:"ZT-002",risk:5,  verdict:"ALLOW",reason:"All ZT checks passed"},
-  {user:"attacker",    resource:"dev_server",       ip:"185.220.101.47",rule:"ZT-D002",risk:99,verdict:"DENY",reason:"APT lateral movement"},
-];
+      <div class="rounded-xl border border-rim bg-surface p-4">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>Verified Allowed</span>
+          <i data-lucide="check-circle-2" class="h-4 w-4 text-allow"></i>
+        </div>
+        <div id="kpi-allow" class="mt-2 font-mono text-2xl font-semibold text-allow">0</div>
+        <div id="kpi-allow-rate" class="mt-1 font-mono text-[11px] text-slate-400">0% pass rate</div>
+      </div>
 
-const ALERTS=[
-  {sev:"CRITICAL",name:"Brute Force Detected",mitre:"T1110",ip:"45.142.212.100",score:95},
-  {sev:"CRITICAL",name:"Lateral Movement Attempt",mitre:"T1021",ip:"185.220.101.47",score:98},
-  {sev:"HIGH",name:"External IP Access Attempt",mitre:"T1133",ip:"45.142.212.100",score:80},
-  {sev:"HIGH",name:"Unmanaged Device Detected",mitre:"T1200",ip:"192.168.1.99",score:85},
-  {sev:"HIGH",name:"After-Hours Admin Access",mitre:"T1078",ip:"10.0.1.10",score:75},
-  {sev:"MEDIUM",name:"Privilege Misuse Attempt",mitre:"T1078",ip:"10.0.2.20",score:60},
-];
+      <div class="rounded-xl border border-rim bg-surface p-4">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>Zero Trust Denied</span>
+          <i data-lucide="shield-alert" class="h-4 w-4 text-deny"></i>
+        </div>
+        <div id="kpi-deny" class="mt-2 font-mono text-2xl font-semibold text-deny">0</div>
+        <div class="mt-1 font-mono text-[11px] text-slate-400">Default-deny enforced</div>
+      </div>
 
-let allows=0,denies=0,alertCount=0,total=0;
-const term=document.getElementById('terminal');
-function tick(){const n=new Date();document.getElementById('clock').textContent=n.toUTCString().slice(17,25)+' UTC';}
-setInterval(tick,1000);tick();
-function log(m,c='li'){const t=new Date().toUTCString().slice(17,25);term.innerHTML+=`<div><span class="lt">[${t}]</span> <span class="${c}">${m}</span></div>`;term.scrollTop=term.scrollHeight;}
+      <div class="rounded-xl border border-rim bg-surface p-4">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>Wazuh Detections</span>
+          <i data-lucide="bell-ring" class="h-4 w-4 text-warn"></i>
+        </div>
+        <div id="kpi-alerts" class="mt-2 font-mono text-2xl font-semibold text-warn">0</div>
+        <div class="mt-1 font-mono text-[11px] text-slate-400">7 MITRE ATT&amp;CK rules</div>
+      </div>
 
-function riskColor(r){return r>=80?'#ff3860':r>=60?'#ff8c00':r>=40?'#ffd600':'#00ff88';}
+      <div class="col-span-2 rounded-xl border border-rim bg-surface p-4 lg:col-span-1">
+        <div class="flex items-center justify-between text-xs text-slate-400">
+          <span>Segmentation Rules</span>
+          <i data-lucide="network" class="h-4 w-4 text-accentsoft"></i>
+        </div>
+        <div class="mt-2 font-mono text-2xl font-semibold text-accentsoft">13</div>
+        <div class="mt-1 font-mono text-[11px] text-slate-400">First-match · 6 zones</div>
+      </div>
+    </section>
 
-function addRow(e){
-  const tbody=document.getElementById('access-tbody');
-  const isA=e.verdict==='ALLOW';
-  if(isA)allows++;else denies++;total++;
-  const tr=document.createElement('tr');tr.className='new';
-  tr.innerHTML=`<td style="color:var(--dim);font-family:var(--mono)">${new Date().toUTCString().slice(17,25)}</td><td style="font-family:var(--mono);color:var(--text)">${e.user}</td><td style="color:var(--text)">${e.resource}</td><td style="font-family:var(--mono);font-size:10px;color:var(--dim)">${e.ip}</td><td style="font-family:var(--mono);font-size:10px;color:var(--accent2)">${e.rule}</td><td><div class="risk-wrap"><div class="risk-track"><div class="risk-fill" style="width:${e.risk}%;background:${riskColor(e.risk)}"></div></div><span class="risk-num" style="color:${riskColor(e.risk)}">${e.risk}</span></div></td><td><span class="verdict ${isA?'v-allow':'v-deny'}">${isA?'✅ ALLOW':'🔴 DENY'}</span></td>`;
-  tbody.insertBefore(tr,tbody.firstChild);
-  if(tbody.rows.length>9)tbody.deleteRow(tbody.rows.length-1);
-  document.getElementById('s-allow').textContent=allows;
-  document.getElementById('s-deny').textContent=denies;
-  document.getElementById('log-badge').textContent=total+' requests';
-  const cls=isA?'li':'la';
-  log(`[${e.verdict}] ${e.user} → ${e.resource} | ${e.reason}`,cls);
-}
+    <!-- TAB 1: POLICY & ACCESS MONITOR -->
+    <section id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" class="space-y-5">
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+        <!-- INTERACTIVE ZERO TRUST POLICY SIMULATOR -->
+        <div class="rounded-xl border border-rim bg-surface p-5 lg:col-span-5">
+          <div class="flex items-center justify-between border-b border-rim pb-3">
+            <div>
+              <h2 class="text-sm font-semibold text-slate-100">Interactive Policy Decision Point (PDP)</h2>
+              <p class="mt-0.5 text-xs text-slate-400">Weighted 5-factor evaluation (Zone 25% · Device 25% · MFA 25% · Role 15% · Time 10%)</p>
+            </div>
+            <span class="rounded border border-accent/40 bg-accent/15 px-2 py-0.5 font-mono text-[11px] text-accentsoft">LIVE PDP</span>
+          </div>
 
-function addAlert(a){
-  const feed=document.getElementById('alert-feed');
-  alertCount++;
-  document.getElementById('s-alert').textContent=alertCount;
-  document.getElementById('alert-badge').textContent=alertCount;
-  const icon=a.sev==='CRITICAL'?'🔴':a.sev==='HIGH'?'🟠':'🟡';
-  const div=document.createElement('div');div.className='alert-item';
-  div.innerHTML=`<span class="alert-icon">${icon}</span><div class="alert-body"><div class="alert-name"><span class="sev sev-${a.sev}">${a.sev}</span> ${a.name}</div><div class="alert-meta">MITRE: ${a.mitre} · IP: ${a.ip} · Score: ${a.score}/100</div></div>`;
-  feed.insertBefore(div,feed.firstChild);
-  log(`[ALERT] ${a.name} · ${a.mitre}`,'lw');
-}
+          <form id="pdp-form" class="mt-4 space-y-3">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label for="sim-role" class="mb-1 block font-mono text-[11px] text-slate-400">IDENTITY / ROLE</label>
+                <select id="sim-role" class="w-full rounded-lg border border-rim bg-elevated px-3 py-2 text-xs text-slate-100 focus:border-accent focus:outline-none">
+                  <option value="ibrahim.soc|soc_analyst">ibrahim.soc (SOC Analyst)</option>
+                  <option value="admin.root|sysadmin">admin.root (System Admin)</option>
+                  <option value="dev.user1|developer">dev.user1 (Developer)</option>
+                  <option value="wazuh.agent|agent_svc">wazuh.agent (Telemetry Svc)</option>
+                  <option value="guest.visitor|guest">guest.visitor (Guest)</option>
+                  <option value="unknown.actor|external">unknown.actor (External)</option>
+                </select>
+              </div>
 
-// Draw network connections on canvas
-function drawNetwork(){
-  const canvas=document.getElementById('net-canvas');
-  const map=document.getElementById('net-map');
-  canvas.width=map.offsetWidth;canvas.height=map.offsetHeight;
-  const ctx=canvas.getContext('2d');
-  const nodes=[
-    {x:0.09,y:0.5,col:'#ff3860'},
-    {x:0.27,y:0.5,col:'#ff8c00'},
-    {x:0.45,y:0.5,col:'#00d4ff'},
-    {x:0.63,y:0.5,col:'#a78bfa'},
-    {x:0.81,y:0.5,col:'#00ff88'},
-    {x:0.63,y:0.8,col:'#ffd600'},
-  ];
-  const edges=[[0,1],[1,2],[1,3],[1,4],[1,5]];
-  ctx.lineWidth=1;
-  edges.forEach(([a,b])=>{
-    const na=nodes[a],nb=nodes[b];
-    ctx.strokeStyle=na.col+'55';
-    ctx.setLineDash([4,4]);
-    ctx.beginPath();
-    ctx.moveTo(na.x*canvas.width,na.y*canvas.height);
-    ctx.lineTo(nb.x*canvas.width,nb.y*canvas.height);
-    ctx.stroke();
-  });
-  nodes.forEach(n=>{
-    ctx.setLineDash([]);
-    ctx.beginPath();ctx.arc(n.x*canvas.width,n.y*canvas.height,5,0,Math.PI*2);
-    ctx.fillStyle=n.col;ctx.fill();
-    ctx.strokeStyle=n.col+'88';ctx.lineWidth=8;
-    ctx.beginPath();ctx.arc(n.x*canvas.width,n.y*canvas.height,5,0,Math.PI*2);ctx.stroke();
-  });
-}
-setTimeout(drawNetwork,300);
+              <div>
+                <label for="sim-zone" class="mb-1 block font-mono text-[11px] text-slate-400">SOURCE SEGMENT</label>
+                <select id="sim-zone" class="w-full rounded-lg border border-rim bg-elevated px-3 py-2 text-xs text-slate-100 focus:border-accent focus:outline-none">
+                  <option value="SOC_NET">SOC_NET (10.0.1.15)</option>
+                  <option value="MGMT_NET">MGMT_NET (10.0.3.10)</option>
+                  <option value="DEV_NET">DEV_NET (10.0.2.20)</option>
+                  <option value="DMZ">DMZ (172.16.0.12)</option>
+                  <option value="GUEST">GUEST (192.168.1.44)</option>
+                  <option value="INTERNET">INTERNET (198.51.100.77)</option>
+                </select>
+              </div>
+            </div>
 
-log('Zero Trust Policy Engine initialized','li');
-log('pfSense firewall: 13 rules loaded','lo');
-log('Wazuh SIEM: monitoring active','lo');
-log('Default policy: DENY ALL','lw');
-log('Evaluating access requests...','li');
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label for="sim-resource" class="mb-1 block font-mono text-[11px] text-slate-400">TARGET RESOURCE</label>
+                <select id="sim-resource" class="w-full rounded-lg border border-rim bg-elevated px-3 py-2 text-xs text-slate-100 focus:border-accent focus:outline-none">
+                  <option value="splunk_siem">Splunk SIEM (SOC_NET)</option>
+                  <option value="wazuh_manager">Wazuh Manager (SOC_NET)</option>
+                  <option value="wazuh_syslog">Wazuh Telemetry TCP/1514 (ZT-005)</option>
+                  <option value="ssh_bastion">SSH Bastion (MGMT_NET)</option>
+                  <option value="dev_git_srv">Dev Git Server (DEV_NET)</option>
+                  <option value="dmz_waf_proxy">Public WAF Proxy (DMZ · ZT-004)</option>
+                </select>
+              </div>
 
-let ei=0,ai=0;
-function streamEvents(){
-  if(ei<EVENTS.length){addRow(EVENTS[ei++]);setTimeout(streamEvents,1000+Math.random()*600);}
-  else{log('Cycle complete. Restarting...','li');setTimeout(()=>{ei=0;allows=0;denies=0;total=0;document.getElementById('access-tbody').innerHTML='';streamEvents();},25000);}
-}
-function streamAlerts(){
-  if(ai<ALERTS.length){addAlert(ALERTS[ai++]);setTimeout(streamAlerts,2200+Math.random()*1000);}
-}
-setTimeout(streamEvents,800);
-setTimeout(streamAlerts,1800);
-</script>
+              <div>
+                <label for="sim-hour" class="mb-1 block font-mono text-[11px] text-slate-400">ACCESS HOUR (UTC): <span id="sim-hour-val" class="text-accentsoft">14:00</span></label>
+                <input id="sim-hour" type="range" min="0" max="23" value="14" class="mt-2 w-full accent-violet-500" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-1">
+              <label class="flex cursor-pointer items-center justify-between rounded-lg border border-rim bg-elevated px-3 py-2">
+                <span class="text-xs text-slate-200">Managed Device</span>
+                <input id="sim-device" type="checkbox" checked class="h-4 w-4 accent-emerald-400" />
+              </label>
+
+              <label class="flex cursor-pointer items-center justify-between rounded-lg border border-rim bg-elevated px-3 py-2">
+                <span class="text-xs text-slate-200">MFA Verified</span>
+                <input id="sim-mfa" type="checkbox" checked class="h-4 w-4 accent-emerald-400" />
+              </label>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <button type="submit" class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white transition hover:bg-violet-500">
+                <i data-lucide="cpu" class="h-4 w-4"></i>
+                <span>Evaluate Request</span>
+              </button>
+              <button id="sim-attack-btn" type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-deny/45 bg-deny/10 px-3 py-2 text-xs font-medium text-deny transition hover:bg-deny/20">
+                <i data-lucide="zap" class="h-3.5 w-3.5"></i>
+                <span>Probe Attack</span>
+              </button>
+              <button id="sim-bruteforce-btn" type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-warn/45 bg-warn/10 px-3 py-2 text-xs font-medium text-warn transition hover:bg-warn/20">
+                <i data-lucide="flame" class="h-3.5 w-3.5"></i>
+                <span>Brute Force (5x)</span>
+              </button>
+            </div>
+          </form>
+
+          <!-- PDP VERDICT + TRACE CARD -->
+          <div id="pdp-result" class="mt-4 rounded-lg border border-rim bg-obsidian p-3.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-mono text-[11px] text-slate-400">LAST PDP VERDICT &amp; COMPOSITE RISK</span>
+              <span id="pdp-verdict-badge" class="rounded border border-allow/35 bg-allow/10 px-2 py-0.5 font-mono text-xs font-semibold text-allow">✓ READY</span>
+            </div>
+            <p id="pdp-verdict-reason" class="mt-1.5 text-xs text-slate-200">Submit a request, click "Probe Attack", or trigger "Brute Force (5x)" to test stateful Wazuh correlation.</p>
+            <div id="pdp-factors" class="mt-2.5 flex flex-wrap gap-1.5"></div>
+            <div id="pdp-trace" class="mt-2.5 border-t border-rim/80 pt-2 font-mono text-[11px] text-slate-400">Trace: awaiting policy evaluation...</div>
+          </div>
+        </div>
+
+        <!-- MICRO-SEGMENTED ZONE TOPOLOGY -->
+        <div class="rounded-xl border border-rim bg-surface p-5 lg:col-span-7">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-rim pb-3">
+            <div>
+              <h2 class="text-sm font-semibold text-slate-100">Micro-Segmented Zone Topology</h2>
+              <p class="mt-0.5 text-xs text-slate-400">Segment Sensitivity (no implicit network trust per NIST 800-207 Tenet 2) — click a zone to inspect</p>
+            </div>
+            <span id="selected-zone-pill" class="rounded border border-accent/40 bg-accent/15 px-2.5 py-1 font-mono text-[11px] text-accentsoft">Selected: SOC_NET (Sensitivity 80)</span>
+          </div>
+
+          <div class="grid-bg mt-4 rounded-xl border border-rim bg-obsidian p-4">
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <button type="button" data-zone="MGMT_NET" aria-pressed="false" class="zone-card rounded-lg border border-rim bg-surface p-3 text-left transition hover:border-accent/60">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-semibold" style="color:#a78bfa;">MGMT_NET</span>
+                  <span class="font-mono text-[11px] text-slate-300">90/100</span>
+                </div>
+                <div class="mt-1 font-mono text-[11px] text-slate-400">10.0.3.0/24</div>
+                <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-rim">
+                  <div class="h-full rounded-full" style="width:90%;background:#a78bfa;"></div>
+                </div>
+                <div class="mt-2 text-[11px] text-slate-300">SSH Bastion · pfSense Admin</div>
+              </button>
+
+              <button type="button" data-zone="SOC_NET" aria-pressed="true" class="zone-card rounded-lg border border-accent/70 bg-accent/15 p-3 text-left transition">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-semibold" style="color:#818cf8;">SOC_NET</span>
+                  <span class="font-mono text-[11px] text-slate-200">80/100</span>
+                </div>
+                <div class="mt-1 font-mono text-[11px] text-slate-400">10.0.1.0/24</div>
+                <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-rim">
+                  <div class="h-full rounded-full" style="width:80%;background:#818cf8;"></div>
+                </div>
+                <div class="mt-2 text-[11px] text-slate-300">Splunk SIEM · Wazuh Manager</div>
+              </button>
+
+              <button type="button" data-zone="DEV_NET" aria-pressed="false" class="zone-card rounded-lg border border-rim bg-surface p-3 text-left transition hover:border-accent/60">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-semibold" style="color:#60a5fa;">DEV_NET</span>
+                  <span class="font-mono text-[11px] text-slate-300">70/100</span>
+                </div>
+                <div class="mt-1 font-mono text-[11px] text-slate-400">10.0.2.0/24</div>
+                <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-rim">
+                  <div class="h-full rounded-full" style="width:70%;background:#60a5fa;"></div>
+                </div>
+                <div class="mt-2 text-[11px] text-slate-300">Dev Git · Build Runners</div>
+              </button>
+
+              <button type="button" data-zone="DMZ" aria-pressed="false" class="zone-card rounded-lg border border-rim bg-surface p-3 text-left transition hover:border-accent/60">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-semibold" style="color:#fbbf24;">DMZ</span>
+                  <span class="font-mono text-[11px] text-slate-300">35/100</span>
+                </div>
+                <div class="mt-1 font-mono text-[11px] text-slate-400">172.16.0.0/24</div>
+                <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-rim">
+                  <div class="h-full rounded-full" style="width:35%;background:#fbbf24;"></div>
+                </div>
+                <div class="mt-2 text-[11px] text-slate-300">Public WAF · Reverse Proxy</div>
+              </button>
+
+              <button type="button" data-zone="GUEST" aria-pressed="false" class="zone-card rounded-lg border border-rim bg-surface p-3 text-left transition hover:border-accent/60">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-semibold" style="color:#fb923c;">GUEST</span>
+                  <span class="font-mono text-[11px] text-slate-300">10/100</span>
+                </div>
+                <div class="mt-1 font-mono text-[11px] text-slate-400">192.168.1.0/24</div>
+                <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-rim">
+                  <div class="h-full rounded-full" style="width:10%;background:#fb923c;"></div>
+                </div>
+                <div class="mt-2 text-[11px] text-slate-300">Isolated Guest Wi-Fi</div>
+              </button>
+
+              <button type="button" data-zone="INTERNET" aria-pressed="false" class="zone-card rounded-lg border border-rim bg-surface p-3 text-left transition hover:border-accent/60">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-semibold" style="color:#f43f5e;">INTERNET</span>
+                  <span class="font-mono text-[11px] text-slate-300">0/100</span>
+                </div>
+                <div class="mt-1 font-mono text-[11px] text-slate-400">0.0.0.0/0</div>
+                <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-rim">
+                  <div class="h-full rounded-full" style="width:3%;background:#f43f5e;"></div>
+                </div>
+                <div class="mt-2 text-[11px] text-slate-300">Untrusted External WAN</div>
+              </button>
+            </div>
+
+            <!-- ZONE POLICY INSPECTOR BAR -->
+            <div id="zone-inspector" class="mt-4 rounded-lg border border-rim bg-surface p-3.5 text-xs text-slate-300">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span id="zi-title" class="font-mono font-semibold text-accentsoft">SOC_NET · 10.0.1.0/24</span>
+                <span id="zi-req" class="font-mono text-[11px] text-slate-400">Inbound: MFA + Managed Device Required</span>
+              </div>
+              <p id="zi-desc" class="mt-1.5 text-slate-400">Hosts Splunk SIEM and Wazuh Manager. Direct access from GUEST, DMZ, or INTERNET is blocked by pfSense rules ZT-D001, ZT-D003, and ZT-D004.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCESS LOG TABLE (8 cols) + WAZUH ALERT FEED (4 cols) -->
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+        <div class="rounded-xl border border-rim bg-surface lg:col-span-8">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-rim px-5 py-3.5">
+            <div class="flex items-center gap-2">
+              <h2 class="text-sm font-semibold text-slate-100">Zero Trust Access Decision Log</h2>
+              <span id="log-count-badge" class="rounded bg-elevated px-2 py-0.5 font-mono text-[11px] text-slate-300">0 events</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" data-filter="ALL" class="filter-btn rounded bg-accent/20 px-2.5 py-1 font-mono text-[11px] text-accentsoft">All</button>
+              <button type="button" data-filter="ALLOW" class="filter-btn rounded px-2.5 py-1 font-mono text-[11px] text-slate-400 hover:bg-elevated">✓ Allow</button>
+              <button type="button" data-filter="DENY" class="filter-btn rounded px-2.5 py-1 font-mono text-[11px] text-slate-400 hover:bg-elevated">✕ Deny</button>
+            </div>
+          </div>
+
+          <div class="no-scrollbar max-h-[340px] overflow-auto">
+            <table class="w-full border-collapse text-left text-xs">
+              <thead class="sticky top-0 bg-elevated font-mono text-[11px] uppercase text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">Time</th>
+                  <th class="px-4 py-2.5">Identity</th>
+                  <th class="px-4 py-2.5">Target</th>
+                  <th class="px-4 py-2.5">Source IP</th>
+                  <th class="px-4 py-2.5">Rule</th>
+                  <th class="px-4 py-2.5">Risk</th>
+                  <th class="px-4 py-2.5">Verdict</th>
+                </tr>
+              </thead>
+              <tbody id="access-tbody" class="divide-y divide-rim/70"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- WAZUH SIEM ALERT STREAM (FULL HEIGHT) -->
+        <div class="rounded-xl border border-rim bg-surface lg:col-span-4">
+          <div class="flex items-center justify-between border-b border-rim px-4 py-3.5">
+            <h2 class="text-sm font-semibold text-slate-100">Wazuh SIEM Alert Stream</h2>
+            <span id="alert-count-badge" class="rounded bg-deny/15 px-2 py-0.5 font-mono text-[11px] text-deny">0</span>
+          </div>
+          <div id="alert-feed" class="no-scrollbar max-h-[340px] divide-y divide-rim/70 overflow-y-auto px-4"></div>
+        </div>
+      </div>
+
+      <!-- PDP POLICY ENGINE LOG (FULL-WIDTH BOTTOM ROW) -->
+      <div class="rounded-xl border border-rim bg-surface overflow-hidden">
+        <div class="flex items-center justify-between border-b border-rim px-5 py-3">
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-xs font-semibold text-accentsoft">PDP Policy Engine Log</span>
+            <span class="rounded bg-elevated px-2 py-0.5 font-mono text-[11px] text-slate-400">live decision stream</span>
+          </div>
+          <span class="font-mono text-[11px] text-slate-400">stdout</span>
+        </div>
+        <div id="policy-terminal" aria-live="polite" class="no-scrollbar h-[150px] overflow-y-auto bg-obsidian px-5 py-3 font-mono text-[11px] leading-relaxed text-slate-300"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: PFSENSE RULESET (13 RULES WITH LIVE HITS) -->
+    <section id="panel-rules" role="tabpanel" aria-labelledby="tab-rules" class="hidden rounded-xl border border-rim bg-surface p-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-rim pb-3">
+        <div>
+          <h2 class="text-sm font-semibold text-slate-100">pfSense Micro-Segmentation Ruleset (13 Rules · First Match Wins)</h2>
+          <p class="mt-0.5 text-xs text-slate-400">pfSense enforces L3/L4 segmentation as the network PEP; identity, MFA, and posture checks are simulated by the PDP</p>
+        </div>
+        <span class="rounded border border-allow/35 bg-allow/10 px-2.5 py-1 font-mono text-[11px] text-allow">5 ALLOW · 8 DENY</span>
+      </div>
+      <div class="no-scrollbar mt-4 overflow-x-auto">
+        <table class="w-full border-collapse text-left text-xs">
+          <thead class="bg-elevated font-mono text-[11px] uppercase text-slate-400">
+            <tr>
+              <th class="px-3 py-2.5">#</th>
+              <th class="px-4 py-2.5">Rule ID</th>
+              <th class="px-4 py-2.5">Source Zone</th>
+              <th class="px-4 py-2.5">Destination</th>
+              <th class="px-4 py-2.5">Port / Proto</th>
+              <th class="px-4 py-2.5">ZT Requirements</th>
+              <th class="px-4 py-2.5">Action</th>
+              <th class="px-4 py-2.5 text-right">Hits</th>
+            </tr>
+          </thead>
+          <tbody id="rules-tbody" class="divide-y divide-rim/70"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 3: WAZUH MITRE ATT&CK DETECTIONS (7 RULES) -->
+    <section id="panel-wazuh" role="tabpanel" aria-labelledby="tab-wazuh" class="hidden rounded-xl border border-rim bg-surface p-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-rim pb-3">
+        <div>
+          <h2 class="text-sm font-semibold text-slate-100">Wazuh Custom MITRE ATT&amp;CK Detection Rules (7)</h2>
+          <p class="mt-0.5 text-xs text-slate-400">Deterministic rule-to-alert mapping plus stateful 60-second brute-force correlation (Rule 100101)</p>
+        </div>
+        <span class="rounded border border-warn/35 bg-warn/10 px-2.5 py-1 font-mono text-[11px] text-warn">WAZUH SIEM</span>
+      </div>
+      <div id="mitre-cards-grid" class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"></div>
+    </section>
+
+    <!-- TAB 4: NIST SP 800-207 ARCHITECTURE & 7 TENETS MAPPING -->
+    <section id="panel-nist" role="tabpanel" aria-labelledby="tab-nist" class="hidden space-y-5">
+      <div class="rounded-xl border border-rim bg-surface p-5">
+        <div class="border-b border-rim pb-3">
+          <h2 class="text-sm font-semibold text-slate-100">NIST SP 800-207 Logical Architecture Mapping</h2>
+          <p class="mt-0.5 text-xs text-slate-400">How this simulation lab maps onto core Zero Trust Architecture (ZTA) components and portfolio integrations</p>
+        </div>
+        <div class="no-scrollbar mt-4 overflow-x-auto">
+          <table class="w-full border-collapse text-left text-xs">
+            <thead class="bg-elevated font-mono text-[11px] uppercase text-slate-400">
+              <tr>
+                <th class="px-4 py-2.5">NIST 800-207 Component</th>
+                <th class="px-4 py-2.5">Lab Implementation</th>
+                <th class="px-4 py-2.5">Enforcement Scope</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-rim/70 text-slate-300">
+              <tr>
+                <td class="px-4 py-2.5 font-mono text-accentsoft">Policy Engine (PE) &amp; Policy Admin (PA)</td>
+                <td class="px-4 py-2.5">Python / JS 5-Factor PDP Engine</td>
+                <td class="px-4 py-2.5">Computes weighted risk score (Zone, Device, MFA, Role, Time) and returns ALLOW/DENY + decision trace.</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-mono text-accentsoft">Policy Enforcement Point (PEP)</td>
+                <td class="px-4 py-2.5">pfSense Firewall (13 Rules)</td>
+                <td class="px-4 py-2.5">Enforces L3/L4 micro-segmentation across 6 VLANs with explicit default-deny (`ZT-DEFAULT`).</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-mono text-accentsoft">CDM / Device Posture</td>
+                <td class="px-4 py-2.5">Simulated Managed Device Check</td>
+                <td class="px-4 py-2.5">Blocks unmanaged endpoints (`ZT-D002`) before internal session establishment.</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-mono text-accentsoft">SIEM &amp; Activity Logs</td>
+                <td class="px-4 py-2.5">Wazuh SIEM + Splunk Correlation</td>
+                <td class="px-4 py-2.5">Generates MITRE ATT&amp;CK alerts (Rules 100101–100107) including stateful 60s brute-force detection.</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-mono text-accentsoft">Threat Intelligence Feed</td>
+                <td class="px-4 py-2.5">CTI Automation Platform (Sibling Project)</td>
+                <td class="px-4 py-2.5">Supplies external malicious IP/IOC context feeding perimeter block rules (`ZT-D001`).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-rim bg-surface p-5">
+        <div class="border-b border-rim pb-3">
+          <h2 class="text-sm font-semibold text-slate-100">NIST SP 800-207 Seven Tenets Coverage</h2>
+          <p class="mt-0.5 text-xs text-slate-400">Explicit verification of what is simulated vs. out-of-scope in this browser lab</p>
+        </div>
+        <div id="tenets-grid" class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const ZONES = {
+      MGMT_NET: {
+        cidr: '10.0.3.0/24',
+        sensitivity: 90,
+        ip: '10.0.3.10',
+        req: 'Inbound: Sysadmin + MFA + Managed + 08:00–19:59 UTC',
+        desc: 'Administrative bastion subnet housing pfSense management and SSH jump hosts. Even internal admins must pass MFA, posture, and time-window checks.'
+      },
+      SOC_NET: {
+        cidr: '10.0.1.0/24',
+        sensitivity: 80,
+        ip: '10.0.1.15',
+        req: 'Inbound: SOC Role + MFA + Managed Device',
+        desc: 'Hosts Splunk SIEM and Wazuh Manager. Direct access from GUEST, DMZ, or INTERNET is blocked by pfSense rules ZT-D001, ZT-D003, and ZT-D004.'
+      },
+      DEV_NET: {
+        cidr: '10.0.2.0/24',
+        sensitivity: 70,
+        ip: '10.0.2.20',
+        req: 'Inbound: Developer Role + MFA + Managed Device',
+        desc: 'Isolated engineering subnet for Git and CI runners. Lateral movement to SOC_NET or MGMT_NET is denied by rule ZT-D005.'
+      },
+      DMZ: {
+        cidr: '172.16.0.0/24',
+        sensitivity: 35,
+        ip: '172.16.0.12',
+        req: 'Inbound: HTTPS/443 Reverse Proxy Only (ZT-004)',
+        desc: 'Demilitarized zone for public-facing WAF proxy. Zero outbound initiation into internal corporate subnets (enforced by ZT-D004).'
+      },
+      GUEST: {
+        cidr: '192.168.1.0/24',
+        sensitivity: 10,
+        ip: '192.168.1.44',
+        req: 'Egress: DNS/HTTPS to WAN Only',
+        desc: 'Untrusted visitor wireless VLAN. Blocked from all RFC 1918 internal subnets by rule ZT-D003.'
+      },
+      INTERNET: {
+        cidr: '0.0.0.0/0',
+        sensitivity: 0,
+        ip: '198.51.100.77',
+        req: 'Inbound: Denied Except DMZ WAF TCP/443',
+        desc: 'External WAN perimeter. All direct SSH, RDP, and SIEM port probes are dropped by ZT-D001 and logged to Wazuh.'
+      }
+    };
+
+    const PFSENSE_RULES = [
+      { order: 1, id: 'ZT-004', src: 'ANY / INTERNET', dst: 'DMZ WAF Proxy', proto: 'TCP/443', req: 'TLS 1.3 Inspection (Public Entry)', action: 'ALLOW' },
+      { order: 2, id: 'ZT-005', src: 'ALL INTERNAL', dst: 'Wazuh Telemetry', proto: 'TCP/1514', req: 'Managed Agent Telemetry Only', action: 'ALLOW' },
+      { order: 3, id: 'ZT-D001', src: 'INTERNET', dst: 'SOC / DEV / MGMT', proto: 'ANY', req: 'Untrusted Perimeter Block', action: 'DENY' },
+      { order: 4, id: 'ZT-D004', src: 'DMZ', dst: 'SOC / DEV / MGMT', proto: 'ANY', req: 'Zero Lateral Pivot from DMZ', action: 'DENY' },
+      { order: 5, id: 'ZT-D003', src: 'GUEST', dst: '10.0.0.0/8', proto: 'ANY', req: 'Guest-to-Internal Isolation', action: 'DENY' },
+      { order: 6, id: 'ZT-D002', src: 'ANY', dst: 'ALL INTERNAL', proto: 'ANY', req: 'Unmanaged Device Block', action: 'DENY' },
+      { order: 7, id: 'ZT-D007', src: 'ANY', dst: 'ALL INTERNAL', proto: 'ANY', req: 'Missing MFA Enforcement', action: 'DENY' },
+      { order: 8, id: 'ZT-D006', src: 'ANY', dst: 'SSH Bastion', proto: 'TCP/22', req: 'Outside 08:00–19:59 UTC Window', action: 'DENY' },
+      { order: 9, id: 'ZT-D005', src: 'DEV_NET', dst: 'MGMT_NET / SOC_NET', proto: 'ANY', req: 'Cross-Zone Privilege Block', action: 'DENY' },
+      { order: 10, id: 'ZT-001', src: 'SOC_NET / MGMT', dst: 'Splunk / Wazuh', proto: 'TCP/8000,443', req: 'SOC Analyst / Sysadmin + MFA + Managed', action: 'ALLOW' },
+      { order: 11, id: 'ZT-002', src: 'MGMT_NET / SOC', dst: 'SSH Bastion', proto: 'TCP/22', req: 'Sysadmin + MFA + Managed + 08:00–19:59', action: 'ALLOW' },
+      { order: 12, id: 'ZT-003', src: 'DEV_NET', dst: 'Dev Git Server', proto: 'TCP/443,22', req: 'Developer + MFA + Managed', action: 'ALLOW' },
+      { order: 13, id: 'ZT-DEFAULT', src: 'ANY', dst: 'ANY', proto: 'ANY', req: 'NIST 800-207 Implicit Deny All', action: 'DENY' }
+    ];
+
+    const WAZUH_RULES = [
+      { id: '100101', mitre: 'T1110', sev: 'CRITICAL', title: 'Brute Force Authentication (5x in 60s)', desc: 'Stateful correlation: 5+ denied requests from the same source IP within 60 seconds.' },
+      { id: '100102', mitre: 'T1021', sev: 'CRITICAL', title: 'Lateral Movement Attempt Across Zones', desc: 'Blocked cross-subnet pivot from DMZ or DEV_NET toward SOC_NET or MGMT_NET (ZT-D004 / ZT-D005).' },
+      { id: '100103', mitre: 'T1133', sev: 'HIGH', title: 'External Remote Service Access Probe', desc: 'Untrusted WAN IP attempted direct access to protected internal resource (ZT-D001).' },
+      { id: '100104', mitre: 'T1200', sev: 'HIGH', title: 'Unmanaged Device Admission Block', desc: 'Endpoint lacking posture certificate attempted internal access (ZT-D002).' },
+      { id: '100105', mitre: 'T1078', sev: 'HIGH', title: 'After-Hours Privileged SSH Attempt', desc: 'Identity attempted SSH Bastion login outside 08:00–19:59 UTC window (ZT-D006).' },
+      { id: '100106', mitre: 'T1046', sev: 'MEDIUM', title: 'Guest VLAN Internal Discovery Probe', desc: 'Isolated GUEST subnet attempted connection into RFC 1918 internal space (ZT-D003).' },
+      { id: '100107', mitre: 'T1556', sev: 'HIGH', title: 'Missing MFA Authentication Bypass Attempt', desc: 'Session attempted protected internal resource without verified MFA token (ZT-D007).' }
+    ];
+
+    const ALERT_BY_RULE = {
+      'ZT-D001': 2,
+      'ZT-D002': 3,
+      'ZT-D003': 5,
+      'ZT-D004': 1,
+      'ZT-D005': 1,
+      'ZT-D006': 4,
+      'ZT-D007': 6
+    };
+
+    const NIST_TENETS = [
+      { n: 'Tenet 1', title: 'All data sources and computing services are resources', status: 'Simulated', detail: 'Each target (SIEM, Wazuh, SSH Bastion, Git, WAF, Syslog) has explicit per-resource policy.' },
+      { n: 'Tenet 2', title: 'All communication is secured regardless of network location', status: 'Simulated', detail: 'Zones represent sensitivity only; internal zones still require MFA, role, and managed posture.' },
+      { n: 'Tenet 3', title: 'Access to individual resources is granted per-session', status: 'Simulated', detail: 'Every single request is re-evaluated through the stateless 5-factor PDP decide() pipeline.' },
+      { n: 'Tenet 4', title: 'Access is determined by dynamic policy (identity, posture, context)', status: 'Simulated', detail: 'Weighted risk combines Identity Role, Segment, Device Posture, MFA, and UTC time window.' },
+      { n: 'Tenet 5', title: 'Enterprise monitors integrity and security posture of all assets', status: 'Simulated', detail: 'Managed device posture toggle and Wazuh TCP/1514 telemetry channel (ZT-005).' },
+      { n: 'Tenet 6', title: 'All resource authentication and authorization are dynamic and enforced', status: 'Simulated', detail: 'Strict first-match ruleset with implicit deny-all fallback (ZT-DEFAULT).' },
+      { n: 'Tenet 7', title: 'Collect as much information as possible to improve security posture', status: 'Simulated', detail: 'All decisions log to audit table, CSV export, rule hit counters, and stateful Wazuh SIEM alerts.' }
+    ];
+
+    const STORAGE_KEY = 'zt_lab_state_v2';
+    const WEIGHTS = { zone: 0.25, device: 0.25, mfa: 0.25, role: 0.15, time: 0.10 };
+
+    const state = {
+      events: [],
+      alerts: [],
+      allowCount: 0,
+      denyCount: 0,
+      ruleHits: {},
+      denyTimestampsByIp: {},
+      filter: 'ALL',
+      streaming: true,
+      selectedZone: 'SOC_NET'
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function utcTime() {
+      return new Date().toUTCString().slice(17, 25);
+    }
+
+    function updateClock() {
+      $('utc-clock').textContent = utcTime() + ' UTC';
+    }
+
+    function appendLog(msg, toneClass = 'text-slate-300') {
+      const term = $('policy-terminal');
+      const line = document.createElement('div');
+      const ts = document.createElement('span');
+      ts.className = 'text-slate-400';
+      ts.textContent = `[${utcTime()}] `;
+      const body = document.createElement('span');
+      body.className = toneClass;
+      body.textContent = msg;
+      line.appendChild(ts);
+      line.appendChild(body);
+      term.appendChild(line);
+      while (term.children.length > 45) term.removeChild(term.firstChild);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          allowCount: state.allowCount,
+          denyCount: state.denyCount,
+          ruleHits: state.ruleHits,
+          events: state.events.slice(0, 20),
+          alerts: state.alerts.slice(0, 12)
+        }));
+      } catch (_) {}
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const saved = JSON.parse(raw);
+        if (typeof saved.allowCount !== 'number') return false;
+        state.allowCount = saved.allowCount;
+        state.denyCount = saved.denyCount;
+        state.ruleHits = saved.ruleHits || {};
+        state.events = Array.isArray(saved.events) ? saved.events : [];
+        state.alerts = Array.isArray(saved.alerts) ? saved.alerts : [];
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    // Pure Zero Trust Policy Decision Function (shared by PDP form & live stream)
+    function decide({ user, role, zone, resource, hour, managed, mfa }) {
+      const trace = [];
+      const zoneOk = zone !== 'INTERNET' && zone !== 'GUEST' && zone !== 'DMZ';
+      const devOk = Boolean(managed);
+      const mfaOk = Boolean(mfa);
+      const timeOk = hour >= 8 && hour < 20;
+      const roleOk = (
+        (resource === 'dmz_waf_proxy') ||
+        (resource === 'wazuh_syslog' && role === 'agent_svc') ||
+        (resource === 'splunk_siem' && role === 'soc_analyst') ||
+        (resource === 'wazuh_manager' && (role === 'soc_analyst' || role === 'sysadmin')) ||
+        (resource === 'ssh_bastion' && role === 'sysadmin') ||
+        (resource === 'dev_git_srv' && role === 'developer')
+      );
+
+      // Weighted composite risk score (0 = lowest risk, 100 = highest risk)
+      let trustFraction = (
+        WEIGHTS.zone * (zoneOk ? 1 : 0) +
+        WEIGHTS.device * (devOk ? 1 : 0) +
+        WEIGHTS.mfa * (mfaOk ? 1 : 0) +
+        WEIGHTS.role * (roleOk ? 1 : 0) +
+        WEIGHTS.time * (timeOk ? 1 : 0)
+      );
+      let risk = 100 - Math.round(100 * trustFraction);
+
+      let verdict = 'DENY';
+      let rule = 'ZT-DEFAULT';
+      let reason = 'Implicit deny: no matching least-privilege rule';
+
+      // Rule 1: ZT-004 Public WAF (evaluated before device/MFA checks)
+      if (resource === 'dmz_waf_proxy') {
+        trace.push('MATCH ZT-004');
+        verdict = 'ALLOW';
+        rule = 'ZT-004';
+        risk = Math.min(risk, 18);
+        reason = 'Public WAF: TLS 1.3 inspection (device/MFA not required)';
+      } else {
+        trace.push('skip ZT-004');
+        // Rule 2: ZT-005 Internal Agent Telemetry
+        if (resource === 'wazuh_syslog' && zoneOk && devOk && role === 'agent_svc') {
+          trace.push('MATCH ZT-005');
+          verdict = 'ALLOW';
+          rule = 'ZT-005';
+          risk = Math.min(risk, 12);
+          reason = 'Managed internal agent telemetry to Wazuh TCP/1514';
+        } else {
+          trace.push('skip ZT-005');
+          // Rule 3: ZT-D001 Internet -> Internal
+          if (zone === 'INTERNET') {
+            trace.push('MATCH ZT-D001');
+            rule = 'ZT-D001';
+            reason = 'External WAN blocked from internal zones';
+          } else {
+            trace.push('skip ZT-D001');
+            // Rule 4: ZT-D004 DMZ -> Internal
+            if (zone === 'DMZ') {
+              trace.push('MATCH ZT-D004');
+              rule = 'ZT-D004';
+              reason = 'Zero lateral pivot from DMZ into internal subnets';
+            } else {
+              trace.push('skip ZT-D004');
+              // Rule 5: ZT-D003 GUEST -> Internal
+              if (zone === 'GUEST') {
+                trace.push('MATCH ZT-D003');
+                rule = 'ZT-D003';
+                reason = 'GUEST VLAN isolated from internal RFC 1918 subnets';
+              } else {
+                trace.push('skip ZT-D003');
+                // Rule 6: ZT-D002 Unmanaged Device
+                if (!devOk) {
+                  trace.push('MATCH ZT-D002');
+                  rule = 'ZT-D002';
+                  reason = 'Unmanaged device failed posture verification';
+                } else {
+                  trace.push('skip ZT-D002');
+                  // Rule 7: ZT-D007 Missing MFA
+                  if (!mfaOk) {
+                    trace.push('MATCH ZT-D007');
+                    rule = 'ZT-D007';
+                    reason = 'MFA token missing or unverified';
+                  } else {
+                    trace.push('skip ZT-D007');
+                    // Rule 8: ZT-D006 SSH After-hours (strictly 08:00-19:59 UTC)
+                    if (resource === 'ssh_bastion' && !timeOk) {
+                      trace.push('MATCH ZT-D006');
+                      rule = 'ZT-D006';
+                      reason = `SSH Bastion blocked outside 08:00–19:59 UTC (${String(hour).padStart(2, '0')}:00 UTC)`;
+                    } else {
+                      trace.push('skip ZT-D006');
+                      // Rule 9: ZT-D005 DEV_NET -> SOC/MGMT
+                      if (zone === 'DEV_NET' && (resource === 'splunk_siem' || resource === 'wazuh_manager' || resource === 'ssh_bastion')) {
+                        trace.push('MATCH ZT-D005');
+                        rule = 'ZT-D005';
+                        reason = 'DEV_NET cross-zone lateral access blocked';
+                      } else {
+                        trace.push('skip ZT-D005');
+                        // Rule 10: ZT-001 SOC/MGMT -> SIEM/Wazuh
+                        if ((resource === 'splunk_siem' && role === 'soc_analyst' && zone === 'SOC_NET') ||
+                            (resource === 'wazuh_manager' && (role === 'soc_analyst' || role === 'sysadmin') && (zone === 'SOC_NET' || zone === 'MGMT_NET'))) {
+                          trace.push('MATCH ZT-001');
+                          verdict = 'ALLOW';
+                          rule = 'ZT-001';
+                          reason = 'All 5 Zero Trust factors verified for SOC SIEM access';
+                        } else if (resource === 'ssh_bastion' && role === 'sysadmin' && (zone === 'MGMT_NET' || zone === 'SOC_NET')) {
+                          trace.push('skip ZT-001', 'MATCH ZT-002');
+                          verdict = 'ALLOW';
+                          rule = 'ZT-002';
+                          reason = 'Sysadmin SSH Bastion verified within 08:00–19:59 UTC';
+                        } else if (resource === 'dev_git_srv' && role === 'developer' && zone === 'DEV_NET') {
+                          trace.push('skip ZT-001', 'skip ZT-002', 'MATCH ZT-003');
+                          verdict = 'ALLOW';
+                          rule = 'ZT-003';
+                          reason = 'Developer DEV_NET Git access verified';
+                        } else {
+                          trace.push('skip ZT-001..003', 'MATCH ZT-DEFAULT');
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const factors = [
+        { label: `Identity: ${role}`, ok: roleOk },
+        { label: `Zone: ${zone}`, ok: resource === 'dmz_waf_proxy' ? true : zoneOk },
+        { label: `Device: ${devOk ? 'Managed' : 'Unmanaged'}`, ok: resource === 'dmz_waf_proxy' ? true : devOk },
+        { label: `MFA: ${mfaOk ? 'Verified' : 'Missing'}`, ok: resource === 'dmz_waf_proxy' ? true : mfaOk },
+        { label: `Window: ${String(hour).padStart(2, '0')}:00 UTC`, ok: resource === 'ssh_bastion' ? timeOk : true }
+      ];
+
+      return {
+        user,
+        role,
+        zone,
+        resource,
+        ip: (ZONES[zone] && ZONES[zone].ip) || '198.51.100.77',
+        rule,
+        risk,
+        verdict,
+        reason,
+        factors,
+        trace: trace.join(' → ')
+      };
+    }
+
+    function renderKPIs() {
+      const total = state.allowCount + state.denyCount;
+      const pct = total > 0 ? Math.round((state.allowCount / total) * 100) : 0;
+      $('kpi-total').textContent = String(total);
+      $('kpi-allow').textContent = String(state.allowCount);
+      $('kpi-allow-rate').textContent = `${pct}% pass rate`;
+      $('kpi-deny').textContent = String(state.denyCount);
+      $('kpi-alerts').textContent = String(state.alerts.length);
+      $('alert-count-badge').textContent = String(state.alerts.length);
+      $('log-count-badge').textContent = `${state.events.length} events`;
+    }
+
+    function riskBarColor(risk) {
+      if (risk >= 75) return 'bg-deny';
+      if (risk >= 45) return 'bg-warn';
+      return 'bg-allow';
+    }
+
+    function renderAccessTable() {
+      const tbody = $('access-tbody');
+      tbody.textContent = '';
+      const rows = state.events.filter(e => state.filter === 'ALL' || e.verdict === state.filter);
+
+      rows.slice(0, 22).forEach((e, idx) => {
+        const isAllow = e.verdict === 'ALLOW';
+        const tr = document.createElement('tr');
+        tr.className = idx === 0 ? 'row-enter hover:bg-elevated/60' : 'hover:bg-elevated/60';
+
+        const addCell = (text, cls) => {
+          const td = document.createElement('td');
+          td.className = cls;
+          td.textContent = text;
+          tr.appendChild(td);
+        };
+
+        addCell(e.time, 'px-4 py-2.5 font-mono text-[11px] text-slate-400');
+        addCell(e.user, 'px-4 py-2.5 font-mono text-slate-100');
+        addCell(e.resource, 'px-4 py-2.5 text-slate-200');
+        addCell(e.ip, 'px-4 py-2.5 font-mono text-[11px] text-slate-400');
+        addCell(e.rule, 'px-4 py-2.5 font-mono text-[11px] text-accentsoft');
+
+        const tdRisk = document.createElement('td');
+        tdRisk.className = 'px-4 py-2.5';
+        const wrap = document.createElement('div');
+        wrap.className = 'flex items-center gap-2';
+        const track = document.createElement('div');
+        track.className = 'h-1.5 w-14 overflow-hidden rounded-full bg-rim';
+        const fill = document.createElement('div');
+        fill.className = `h-full ${riskBarColor(e.risk)}`;
+        fill.style.width = `${e.risk}%`;
+        track.appendChild(fill);
+        const num = document.createElement('span');
+        num.className = 'font-mono text-[11px] text-slate-200';
+        num.textContent = String(e.risk);
+        wrap.appendChild(track);
+        wrap.appendChild(num);
+        tdRisk.appendChild(wrap);
+        tr.appendChild(tdRisk);
+
+        const tdVerdict = document.createElement('td');
+        tdVerdict.className = 'px-4 py-2.5';
+        const badge = document.createElement('span');
+        badge.className = isAllow
+          ? 'inline-flex rounded border border-allow/35 bg-allow/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-allow'
+          : 'inline-flex rounded border border-deny/35 bg-deny/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-deny';
+        badge.textContent = isAllow ? '✓ ALLOW' : '✕ DENY';
+        tdVerdict.appendChild(badge);
+        tr.appendChild(tdVerdict);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAlerts() {
+      const feed = $('alert-feed');
+      feed.textContent = '';
+      state.alerts.slice(0, 14).forEach(a => {
+        const sevClass = a.sev === 'CRITICAL'
+          ? 'border-deny/40 bg-deny/15 text-deny'
+          : a.sev === 'HIGH'
+          ? 'border-warn/40 bg-warn/15 text-warn'
+          : 'border-info/40 bg-info/15 text-info';
+
+        const card = document.createElement('div');
+        card.className = 'py-2.5';
+
+        const top = document.createElement('div');
+        top.className = 'flex items-center justify-between gap-2';
+        const sevSpan = document.createElement('span');
+        sevSpan.className = `rounded border px-1.5 py-0.5 font-mono text-[11px] font-semibold ${sevClass}`;
+        sevSpan.textContent = a.sev;
+        const metaTop = document.createElement('span');
+        metaTop.className = 'font-mono text-[11px] text-slate-400';
+        metaTop.textContent = `${a.mitre} · ${a.time}`;
+        top.appendChild(sevSpan);
+        top.appendChild(metaTop);
+
+        const title = document.createElement('div');
+        title.className = 'mt-1 text-xs font-medium text-slate-100';
+        title.textContent = a.title;
+
+        const sub = document.createElement('div');
+        sub.className = 'mt-0.5 font-mono text-[11px] text-slate-400';
+        sub.textContent = `Rule ${a.id} · Src ${a.ip}`;
+
+        card.appendChild(top);
+        card.appendChild(title);
+        card.appendChild(sub);
+        feed.appendChild(card);
+      });
+    }
+
+    function renderRulesTable() {
+      const tbody = $('rules-tbody');
+      tbody.textContent = '';
+      PFSENSE_RULES.forEach(r => {
+        const hits = state.ruleHits[r.id] || 0;
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-elevated/60';
+
+        const add = (txt, cls) => {
+          const td = document.createElement('td');
+          td.className = cls;
+          td.textContent = txt;
+          tr.appendChild(td);
+        };
+
+        add(String(r.order), 'px-3 py-2.5 font-mono text-[11px] text-slate-400');
+        add(r.id, 'px-4 py-2.5 font-mono font-semibold text-accentsoft');
+        add(r.src, 'px-4 py-2.5 font-mono text-slate-200');
+        add(r.dst, 'px-4 py-2.5 text-slate-200');
+        add(r.proto, 'px-4 py-2.5 font-mono text-[11px] text-slate-400');
+        add(r.req, 'px-4 py-2.5 text-slate-300');
+
+        const tdAct = document.createElement('td');
+        tdAct.className = 'px-4 py-2.5';
+        const span = document.createElement('span');
+        span.className = r.action === 'ALLOW'
+          ? 'rounded border border-allow/35 bg-allow/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-allow'
+          : 'rounded border border-deny/35 bg-deny/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-deny';
+        span.textContent = r.action === 'ALLOW' ? '✓ ALLOW' : '✕ DENY';
+        tdAct.appendChild(span);
+        tr.appendChild(tdAct);
+
+        add(String(hits), 'px-4 py-2.5 text-right font-mono font-semibold text-slate-100');
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderStaticCards() {
+      const grid = $('mitre-cards-grid');
+      grid.textContent = '';
+      WAZUH_RULES.forEach(w => {
+        const card = document.createElement('div');
+        card.className = 'rounded-xl border border-rim bg-obsidian p-4';
+        const sevText = w.sev === 'CRITICAL' ? 'text-deny' : w.sev === 'HIGH' ? 'text-warn' : 'text-info';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="rounded border border-accent/40 bg-accent/15 px-2 py-0.5 font-mono text-[11px] font-semibold text-accentsoft">${w.mitre}</span>
+            <span class="font-mono text-[11px] text-slate-400">Wazuh Rule ${w.id}</span>
+          </div>
+          <h3 class="mt-2.5 text-sm font-semibold text-slate-100">${w.title}</h3>
+          <p class="mt-1 text-xs leading-relaxed text-slate-400">${w.desc}</p>
+          <div class="mt-3 font-mono text-[11px] ${sevText}">Severity: ${w.sev}</div>
+        `;
+        grid.appendChild(card);
+      });
+
+      const tGrid = $('tenets-grid');
+      tGrid.textContent = '';
+      NIST_TENETS.forEach(t => {
+        const box = document.createElement('div');
+        box.className = 'rounded-lg border border-rim bg-obsidian p-3.5';
+        box.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-mono text-xs font-semibold text-accentsoft">${t.n}</span>
+            <span class="rounded border border-allow/35 bg-allow/10 px-2 py-0.5 font-mono text-[11px] text-allow">${t.status}</span>
+          </div>
+          <div class="mt-1.5 text-xs font-medium text-slate-100">${t.title}</div>
+          <p class="mt-1 text-xs text-slate-400">${t.detail}</p>
+        `;
+        tGrid.appendChild(box);
+      });
+    }
+
+    function recordAlert(ruleObj, ip) {
+      const alertEntry = { ...ruleObj, ip, time: utcTime() };
+      state.alerts.unshift(alertEntry);
+      if (state.alerts.length > 30) state.alerts.pop();
+      renderAlerts();
+      renderKPIs();
+      appendLog(`[WAZUH ${alertEntry.mitre} · ${alertEntry.id}] ${alertEntry.title} (${ip})`, 'text-warn');
+    }
+
+    function checkStatefulBruteForce(ip) {
+      const now = Date.now();
+      if (!state.denyTimestampsByIp[ip]) state.denyTimestampsByIp[ip] = [];
+      state.denyTimestampsByIp[ip] = state.denyTimestampsByIp[ip].filter(t => now - t <= 60000);
+      state.denyTimestampsByIp[ip].push(now);
+      if (state.denyTimestampsByIp[ip].length >= 5) {
+        state.denyTimestampsByIp[ip] = [];
+        recordAlert(WAZUH_RULES[0], ip);
+      }
+    }
+
+    function applyDecision(decision, updatePdpCard = false) {
+      const entry = { ...decision, time: utcTime() };
+      state.events.unshift(entry);
+      if (state.events.length > 60) state.events.pop();
+
+      if (entry.verdict === 'ALLOW') state.allowCount++;
+      else state.denyCount++;
+
+      state.ruleHits[entry.rule] = (state.ruleHits[entry.rule] || 0) + 1;
+
+      if (updatePdpCard) {
+        const badge = $('pdp-verdict-badge');
+        badge.textContent = `${entry.verdict === 'ALLOW' ? '✓' : '✕'} ${entry.verdict} · ${entry.rule}`;
+        badge.className = entry.verdict === 'ALLOW'
+          ? 'rounded border border-allow/35 bg-allow/10 px-2 py-0.5 font-mono text-xs font-semibold text-allow'
+          : 'rounded border border-deny/35 bg-deny/10 px-2 py-0.5 font-mono text-xs font-semibold text-deny';
+
+        $('pdp-verdict-reason').textContent = `${entry.reason} (Composite Risk: ${entry.risk}/100)`;
+
+        const fWrap = $('pdp-factors');
+        fWrap.textContent = '';
+        entry.factors.forEach(f => {
+          const chip = document.createElement('span');
+          chip.className = f.ok
+            ? 'rounded border border-allow/35 bg-allow/10 px-2 py-0.5 font-mono text-[11px] text-allow'
+            : 'rounded border border-deny/35 bg-deny/10 px-2 py-0.5 font-mono text-[11px] text-deny';
+          chip.textContent = `${f.ok ? '✓' : '✕'} ${f.label}`;
+          fWrap.appendChild(chip);
+        });
+
+        $('pdp-trace').textContent = `Trace: ${entry.trace}`;
+      }
+
+      appendLog(`[${entry.verdict}] ${entry.user} -> ${entry.resource} (${entry.rule}: ${entry.reason})`, entry.verdict === 'ALLOW' ? 'text-allow' : 'text-deny');
+
+      if (entry.verdict === 'DENY') {
+        const mappedIdx = ALERT_BY_RULE[entry.rule];
+        if (mappedIdx !== undefined) {
+          recordAlert(WAZUH_RULES[mappedIdx], entry.ip);
+        }
+        checkStatefulBruteForce(entry.ip);
+      }
+
+      renderAccessTable();
+      renderRulesTable();
+      renderKPIs();
+      saveState();
+    }
+
+    // Dynamic traffic generator using the exact same pure decide() engine
+    const STREAM_PROFILES = [
+      { user: 'ibrahim.soc', role: 'soc_analyst', zones: ['SOC_NET'], resources: ['splunk_siem', 'wazuh_manager', 'ssh_bastion'] },
+      { user: 'admin.root', role: 'sysadmin', zones: ['MGMT_NET', 'SOC_NET'], resources: ['ssh_bastion', 'wazuh_manager'] },
+      { user: 'dev.user1', role: 'developer', zones: ['DEV_NET'], resources: ['dev_git_srv', 'splunk_siem', 'ssh_bastion'] },
+      { user: 'wazuh.agent', role: 'agent_svc', zones: ['DEV_NET', 'MGMT_NET', 'SOC_NET'], resources: ['wazuh_syslog'] },
+      { user: 'guest.visitor', role: 'guest', zones: ['GUEST'], resources: ['splunk_siem', 'dmz_waf_proxy'] },
+      { user: 'unknown.actor', role: 'external', zones: ['INTERNET', 'DMZ'], resources: ['dmz_waf_proxy', 'ssh_bastion', 'splunk_siem'] }
+    ];
+
+    function generateLiveRequest() {
+      const p = STREAM_PROFILES[Math.floor(Math.random() * STREAM_PROFILES.length)];
+      const zone = p.zones[Math.floor(Math.random() * p.zones.length)];
+      const resource = p.resources[Math.floor(Math.random() * p.resources.length)];
+      const hour = Math.random() < 0.78 ? (8 + Math.floor(Math.random() * 12)) : (20 + Math.floor(Math.random() * 4));
+      const managed = (zone === 'INTERNET' || zone === 'GUEST') ? false : Math.random() < 0.88;
+      const mfa = (zone === 'INTERNET' || zone === 'GUEST') ? false : Math.random() < 0.85;
+      return decide({ user: p.user, role: p.role, zone, resource, hour, managed, mfa });
+    }
+
+    function switchTab(target) {
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        const active = b.dataset.tab === target;
+        b.setAttribute('aria-selected', String(active));
+        b.setAttribute('tabindex', active ? '0' : '-1');
+        b.className = active
+          ? 'tab-btn rounded-md bg-accent/20 px-3 py-1.5 text-xs font-semibold text-accentsoft ring-1 ring-accent/40 transition'
+          : 'tab-btn rounded-md px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:bg-elevated hover:text-slate-200';
+      });
+      ['overview', 'rules', 'wazuh', 'nist'].forEach(p => {
+        $('panel-' + p).classList.toggle('hidden', p !== target);
+      });
+    }
+
+    function bindEvents() {
+      $('sim-hour').addEventListener('input', (e) => {
+        $('sim-hour-val').textContent = `${String(e.target.value).padStart(2, '0')}:00`;
+      });
+
+      $('pdp-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const [user, role] = $('sim-role').value.split('|');
+        const res = decide({
+          user,
+          role,
+          zone: $('sim-zone').value,
+          resource: $('sim-resource').value,
+          hour: Number($('sim-hour').value),
+          managed: $('sim-device').checked,
+          mfa: $('sim-mfa').checked
+        });
+        applyDecision(res, true);
+      });
+
+      $('sim-attack-btn').addEventListener('click', () => {
+        $('sim-role').value = 'unknown.actor|external';
+        $('sim-zone').value = 'INTERNET';
+        $('sim-resource').value = 'ssh_bastion';
+        $('sim-hour').value = '2';
+        $('sim-hour-val').textContent = '02:00';
+        $('sim-device').checked = false;
+        $('sim-mfa').checked = false;
+        const res = decide({
+          user: 'unknown.actor',
+          role: 'external',
+          zone: 'INTERNET',
+          resource: 'ssh_bastion',
+          hour: 2,
+          managed: false,
+          mfa: false
+        });
+        applyDecision(res, true);
+      });
+
+      $('sim-bruteforce-btn').addEventListener('click', () => {
+        appendLog('Simulating 5 rapid SSH auth attempts from 198.51.100.77...', 'text-warn');
+        for (let i = 0; i < 5; i++) {
+          const res = decide({
+            user: 'unknown.actor',
+            role: 'external',
+            zone: 'INTERNET',
+            resource: 'ssh_bastion',
+            hour: 2,
+            managed: false,
+            mfa: false
+          });
+          applyDecision(res, i === 4);
+        }
+      });
+
+      document.querySelectorAll('.zone-card').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const z = btn.dataset.zone;
+          state.selectedZone = z;
+          document.querySelectorAll('.zone-card').forEach(c => {
+            const active = c.dataset.zone === z;
+            c.setAttribute('aria-pressed', String(active));
+            c.classList.toggle('border-accent/70', active);
+            c.classList.toggle('bg-accent/15', active);
+            c.classList.toggle('border-rim', !active);
+            c.classList.toggle('bg-surface', !active);
+          });
+          const info = ZONES[z];
+          $('selected-zone-pill').textContent = `Selected: ${z} (Sensitivity ${info.sensitivity})`;
+          $('zi-title').textContent = `${z} · ${info.cidr}`;
+          $('zi-req').textContent = info.req;
+          $('zi-desc').textContent = info.desc;
+        });
+      });
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.filter = btn.dataset.filter;
+          document.querySelectorAll('.filter-btn').forEach(b => {
+            b.className = 'filter-btn rounded px-2.5 py-1 font-mono text-[11px] text-slate-400 hover:bg-elevated';
+          });
+          btn.className = 'filter-btn rounded bg-accent/20 px-2.5 py-1 font-mono text-[11px] text-accentsoft';
+          renderAccessTable();
+        });
+      });
+
+      const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
+      tabBtns.forEach((btn, idx) => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        btn.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const next = e.key === 'ArrowRight'
+              ? tabBtns[(idx + 1) % tabBtns.length]
+              : tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length];
+            next.focus();
+            switchTab(next.dataset.tab);
+          }
+        });
+      });
+
+      $('toggle-stream-btn').addEventListener('click', () => {
+        state.streaming = !state.streaming;
+        $('stream-status').textContent = state.streaming ? 'STREAMING' : 'PAUSED';
+        $('toggle-stream-btn').querySelector('span').textContent = state.streaming ? 'Pause' : 'Resume';
+        appendLog(state.streaming ? 'Telemetry stream resumed' : 'Telemetry stream paused', 'text-accentsoft');
+      });
+
+      $('reset-lab-btn').addEventListener('click', () => {
+        state.events = [];
+        state.alerts = [];
+        state.allowCount = 0;
+        state.denyCount = 0;
+        state.ruleHits = {};
+        state.denyTimestampsByIp = {};
+        try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+        renderAccessTable();
+        renderAlerts();
+        renderRulesTable();
+        renderKPIs();
+        appendLog('Lab counters and local storage cleared', 'text-warn');
+      });
+
+      $('export-csv-btn').addEventListener('click', () => {
+        const safe = (v) => {
+          const s = String(v ?? '').replace(/"/g, '""');
+          return /^[=+\-@\t\r]/.test(s) ? `"'${s}"` : `"${s}"`;
+        };
+        const header = ['Time', 'User', 'Role', 'Zone', 'Resource', 'Source_IP', 'Rule', 'Risk', 'Verdict', 'Reason'].join(',');
+        const body = state.events.map(e => [e.time, e.user, e.role, e.zone, e.resource, e.ip, e.rule, e.risk, e.verdict, e.reason].map(safe).join(',')).join('\n');
+        const blob = new Blob([header + '\n' + body], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'zero_trust_access_log.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        appendLog(`Exported ${state.events.length} access records to CSV`, 'text-info');
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) window.lucide.createIcons();
+      updateClock();
+      setInterval(updateClock, 1000);
+      renderStaticCards();
+      bindEvents();
+
+      const restored = loadState();
+      if (restored) {
+        renderAccessTable();
+        renderAlerts();
+        renderRulesTable();
+        renderKPIs();
+        appendLog('Restored prior lab session from localStorage', 'text-accentsoft');
+      } else {
+        appendLog('Zero Trust PDP initialized (NIST SP 800-207)', 'text-allow');
+        appendLog('Loaded 13 first-match pfSense rules + 7 Wazuh MITRE rules', 'text-accentsoft');
+        applyDecision(decide({ user: 'ibrahim.soc', role: 'soc_analyst', zone: 'SOC_NET', resource: 'splunk_siem', hour: 14, managed: true, mfa: true }), true);
+        applyDecision(decide({ user: 'unknown.actor', role: 'external', zone: 'INTERNET', resource: 'dmz_waf_proxy', hour: 14, managed: false, mfa: false }));
+        applyDecision(decide({ user: 'dev.user1', role: 'developer', zone: 'DEV_NET', resource: 'ssh_bastion', hour: 14, managed: true, mfa: true }));
+        applyDecision(decide({ user: 'admin.root', role: 'sysadmin', zone: 'MGMT_NET', resource: 'ssh_bastion', hour: 22, managed: true, mfa: true }));
+      }
+
+      setInterval(() => {
+        if (!state.streaming) return;
+        applyDecision(generateLiveRequest());
+      }, 3600);
+    });
+  </script>
 </body>
 </html>
